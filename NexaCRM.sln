@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.API", "NexaCRM.API\NexaCRM.API.csproj", "{94C15852-F9F8-49C4-B990-A0DA2F2466E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.Domain", "NexaCRM.Domain\NexaCRM.Domain.csproj", "{5E024E30-CE96-4C85-A6BB-CC93364DEA50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.Application", "NexaCRM.Application\NexaCRM.Application.csproj", "{4BED1DDA-517C-48F6-88F0-758E7296DBB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.Infrastructure", "NexaCRM.Infrastructure\NexaCRM.Infrastructure.csproj", "{C0330B47-5079-463B-8AD3-E188ECB47F86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94C15852-F9F8-49C4-B990-A0DA2F2466E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C15852-F9F8-49C4-B990-A0DA2F2466E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C15852-F9F8-49C4-B990-A0DA2F2466E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C15852-F9F8-49C4-B990-A0DA2F2466E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E024E30-CE96-4C85-A6BB-CC93364DEA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E024E30-CE96-4C85-A6BB-CC93364DEA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E024E30-CE96-4C85-A6BB-CC93364DEA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E024E30-CE96-4C85-A6BB-CC93364DEA50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BED1DDA-517C-48F6-88F0-758E7296DBB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BED1DDA-517C-48F6-88F0-758E7296DBB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BED1DDA-517C-48F6-88F0-758E7296DBB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BED1DDA-517C-48F6-88F0-758E7296DBB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0330B47-5079-463B-8AD3-E188ECB47F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0330B47-5079-463B-8AD3-E188ECB47F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0330B47-5079-463B-8AD3-E188ECB47F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0330B47-5079-463B-8AD3-E188ECB47F86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
