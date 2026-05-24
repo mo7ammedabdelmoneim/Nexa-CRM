@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NexaCRM.Application\NexaCRM.Application.csproj" />
+    <ProjectReference Include="..\NexaCRM.Domain\NexaCRM.Domain.csproj" />
     <ProjectReference Include="..\NexaCRM.Infrastructure\NexaCRM.Infrastructure.csproj" />
   </ItemGroup>
 
