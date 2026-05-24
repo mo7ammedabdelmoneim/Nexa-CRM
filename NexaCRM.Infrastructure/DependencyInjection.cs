@@ -21,9 +21,11 @@ public static class DependencyInjection
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
         // Repositories
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ILeadRepository, LeadRepository>();
         services.AddScoped<ILeadQueryRepository, LeadQueryRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDealRepository, DealRepository>();
+        services.AddScoped<IDealQueryRepository, DealQueryRepository>();
 
         return services;
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NexaCRM.Domain.Aggregates.Deals;
 using NexaCRM.Domain.Aggregates.Leads;
 
 namespace NexaCRM.Infrastructure.Persistence;
@@ -9,6 +10,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Lead> Leads => Set<Lead>();
     public DbSet<LeadNote> LeadNotes => Set<LeadNote>();
+    public DbSet<Deal> Deals => Set<Deal>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -18,6 +20,8 @@ public class AppDbContext : DbContext
         // Global Query Filter — Soft Delete
         modelBuilder.Entity<Lead>()
             .HasQueryFilter(l => !l.IsDeleted);
+        modelBuilder.Entity<Deal>()
+            .HasQueryFilter(d => !d.IsDeleted);
 
         base.OnModelCreating(modelBuilder);
     }
