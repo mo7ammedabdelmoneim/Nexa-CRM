@@ -5,8 +5,7 @@ public sealed class ContactInfo
     public string Email { get; }
     public string? Phone { get; }
 
-    private ContactInfo() { } 
-
+    private ContactInfo() { Email = string.Empty; }
     private ContactInfo(string email, string? phone)
     {
         Email = email;

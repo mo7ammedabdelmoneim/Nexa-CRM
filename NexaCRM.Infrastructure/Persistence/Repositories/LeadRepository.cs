@@ -38,8 +38,3 @@ public class LeadRepository : ILeadRepository
     public void Delete(Lead lead)
         => _context.Leads.Update(lead); // just update IsDeleted
 }
-
-using Microsoft.EntityFrameworkCore;
-using NexaCRM.Application.Common;
-using NexaCRM.Application.Contracts;
-using NexaCRM.Application.DTOs;

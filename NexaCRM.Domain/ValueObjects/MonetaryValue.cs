@@ -4,8 +4,7 @@ public sealed class MonetaryValue
     public decimal Amount { get; }
     public string Currency { get; }
 
-    private MonetaryValue() { } 
-
+    private MonetaryValue() { Currency = string.Empty; }
     private MonetaryValue(decimal amount, string currency)
     {
         Amount = amount;
