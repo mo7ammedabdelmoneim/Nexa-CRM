@@ -1,6 +1,9 @@
 using NexaCRM.Application;
 using NexaCRM.Infrastructure;
 using NexaCRM.API.Middleware;
+using Hangfire;
+using NexaCRM.Infrastructure.Hubs;
+using NexaCRM.Infrastructure.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +31,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseHangfireDashboard("/jobs");
+
+app.MapHub<NotificationHub>("/hubs/notifications");
+
+// Register recurring jobs
+using (var scope = app.Services.CreateScope())
+{
+    RecurringJob.AddOrUpdate<TaskReminderJob>(
+        "task-reminder",
+        job => job.ExecuteAsync(),
+        "0 * * * *"); //every hour
+}
+
 app.MapControllers();
 
 app.Run();

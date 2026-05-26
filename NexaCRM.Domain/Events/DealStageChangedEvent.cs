@@ -1,8 +1,10 @@
-﻿namespace NexaCRM.Domain.Events;
+﻿using NexaCRM.Domain.Common;
+
+namespace NexaCRM.Domain.Events;
 
 public sealed record DealStageChangedEvent(
     Guid DealId,
     string Title,
     string OldStage,
     string NewStage,
-    Guid? AssignedToUserId);
+    Guid? AssignedToUserId) : IDomainEvent;

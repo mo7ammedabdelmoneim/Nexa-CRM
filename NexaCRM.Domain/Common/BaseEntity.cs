@@ -8,10 +8,10 @@ public abstract class BaseEntity
     public Guid? CreatedByUserId { get; set; }
     public bool IsDeleted { get; private set; } = false;
 
-    private readonly List<object> _domainEvents = [];
-    public IReadOnlyCollection<object> DomainEvents => _domainEvents.AsReadOnly();
+    private readonly List<IDomainEvent> _domainEvents = [];
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    protected void RaiseDomainEvent(object domainEvent)
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
         => _domainEvents.Add(domainEvent);
 
     public void ClearDomainEvents()

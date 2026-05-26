@@ -1,3 +1,9 @@
-﻿namespace NexaCRM.Domain.Events;
+﻿using NexaCRM.Domain.Common;
 
-public sealed record LeadCreatedEvent(Guid LeadId, string LeadName, string Email, Guid? AssignedToUserId);
+namespace NexaCRM.Domain.Events;
+
+public sealed record LeadCreatedEvent(
+    Guid LeadId,
+    string LeadName,
+    string Email,
+    Guid? AssignedToUserId) : IDomainEvent;

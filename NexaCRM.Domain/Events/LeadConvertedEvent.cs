@@ -1,5 +1,7 @@
-﻿namespace NexaCRM.Domain.Events;
+﻿using NexaCRM.Domain.Common;
+
+namespace NexaCRM.Domain.Events;
 public sealed record LeadConvertedEvent(
     Guid LeadId,
     Guid DealId,
-    string LeadName);
+    string LeadName) : IDomainEvent;
