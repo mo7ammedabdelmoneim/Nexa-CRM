@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<ITaskQueryRepository, TaskQueryRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationQueryRepository, NotificationQueryRepository>();
+        services.AddScoped<IReportRepository, ReportRepository>();
 
         // UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
