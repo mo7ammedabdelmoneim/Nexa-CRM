@@ -1,9 +1,13 @@
-﻿using Hangfire;
+﻿using System.Text;
+using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using NexaCRM.Application.Contracts;
 using NexaCRM.Domain.Repositories;
+using NexaCRM.Infrastructure.Auth;
 using NexaCRM.Infrastructure.Jobs;
 using NexaCRM.Infrastructure.Persistence;
 using NexaCRM.Infrastructure.Persistence.Repositories;
@@ -34,16 +38,56 @@ public static class DependencyInjection
         services.AddScoped<ITaskQueryRepository, TaskQueryRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationQueryRepository, NotificationQueryRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
 
         // UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Services
+        // Auth Services
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddHttpContextAccessor();
+
+        // Notification Service
         services.AddScoped<INotificationService, NotificationService>();
 
         // SignalR
         services.AddSignalR();
+
+        // JWT Authentication
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!)),
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["JwtSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JwtSettings:Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                };
+
+                // SignalR JWT support
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/hubs"))
+                            context.Token = accessToken;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
         // Hangfire
         services.AddHangfire(config => config
@@ -53,8 +97,6 @@ public static class DependencyInjection
             .UseSqlServerStorage(configuration.GetConnectionString("Default")));
 
         services.AddHangfireServer();
-
-        // Jobs
         services.AddScoped<TaskReminderJob>();
 
         return services;

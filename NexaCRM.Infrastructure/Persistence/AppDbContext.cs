@@ -4,6 +4,7 @@ using NexaCRM.Domain.Aggregates.Deals;
 using NexaCRM.Domain.Aggregates.Leads;
 using NexaCRM.Domain.Aggregates.Notifications;
 using NexaCRM.Domain.Aggregates.Tasks;
+using NexaCRM.Domain.Aggregates.Users;
 
 namespace NexaCRM.Infrastructure.Persistence;
 
@@ -16,7 +17,9 @@ public class AppDbContext : DbContext
     public DbSet<Deal> Deals => Set<Deal>(); 
     public DbSet<Activity> Activities => Set<Activity>();
     public DbSet<CrmTask> Tasks => Set<CrmTask>();
-    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Notification> Notifications => Set<Notification>(); 
+    public DbSet<User> Users => Set<User>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

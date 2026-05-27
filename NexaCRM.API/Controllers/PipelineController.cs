@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Deals.Commands.AssignDeal;
 using NexaCRM.Application.Features.Deals.Commands.CreateDeal;
 using NexaCRM.Application.Features.Deals.Commands.UpdateDealDetails;
@@ -10,17 +12,19 @@ using NexaCRM.Application.Features.Deals.Queries.GetPipelineOverview;
 
 namespace NexaCRM.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/pipeline")]
 public class PipelineController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    private static readonly Guid _tenantId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-    private static readonly Guid _userId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7");
-
-    public PipelineController(ISender sender)
-        => _sender = sender;
+    public PipelineController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
     // GET api/pipeline
     [HttpGet]
@@ -29,7 +33,7 @@ public class PipelineController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new GetPipelineOverviewQuery(_tenantId, assignedToUserId),
+            new GetPipelineOverviewQuery(_currentUser.TenantId, assignedToUserId),
             cancellationToken);
 
         return result.IsSuccess
@@ -49,7 +53,7 @@ public class PipelineController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(
-            new GetDealsQuery(_tenantId, stage, assignedToUserId, minValue, maxValue, page, pageSize),
+            new GetDealsQuery(_currentUser.TenantId, stage, assignedToUserId, minValue, maxValue, page, pageSize),
             cancellationToken);
 
         return result.IsSuccess
@@ -81,8 +85,8 @@ public class PipelineController : ControllerBase
             request.LeadId,
             request.Title,
             request.Amount,
-            _tenantId,
-            _userId,
+            _currentUser.TenantId,
+            _currentUser.UserId,
             request.Currency,
             request.CloseDate,
             request.AssignedToUserId), cancellationToken);

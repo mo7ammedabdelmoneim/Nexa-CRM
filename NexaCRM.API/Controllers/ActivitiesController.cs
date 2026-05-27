@@ -1,21 +1,25 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Activities.Commands.LogActivity;
 using NexaCRM.Application.Features.Activities.Queries.GetActivities;
 
 namespace NexaCRM.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ActivitiesController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    private static readonly Guid _tenantId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-    private static readonly Guid _userId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7");
-
-    public ActivitiesController(ISender sender)
-        => _sender = sender;
+    public ActivitiesController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
     // POST api/activities
     [HttpPost]
@@ -27,8 +31,8 @@ public class ActivitiesController : ControllerBase
             request.Type,
             request.Description,
             request.OccurredAt,
-            _tenantId,
-            _userId,
+            _currentUser.TenantId,
+            _currentUser.UserId,
             request.LeadId,
             request.DealId), cancellationToken);
 
@@ -50,7 +54,7 @@ public class ActivitiesController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetActivitiesQuery(
-            _tenantId, leadId, dealId, type, from, to, page, pageSize),
+            _currentUser.TenantId, leadId, dealId, type, from, to, page, pageSize),
             cancellationToken);
 
         return result.IsSuccess

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Leads.Commands.AssignLead;
 using NexaCRM.Application.Features.Leads.Commands.CreateLead;
 using NexaCRM.Application.Features.Leads.Commands.DeleteLead;
@@ -14,13 +15,14 @@ namespace NexaCRM.API.Controllers;
 public class LeadsController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    // Hardcoded for now — will come from JWT later
-    private static readonly Guid _tenantId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-    private static readonly Guid _userId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7");
+    public LeadsController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
-    public LeadsController(ISender sender)
-        => _sender = sender;
 
     // POST api/leads
     [HttpPost]
@@ -32,8 +34,8 @@ public class LeadsController : ControllerBase
             request.Name,
             request.Email,
             request.Source,
-            _tenantId,
-            _userId,
+            _currentUser.TenantId,
+            _currentUser.UserId,
             request.Phone,
             request.AssignedToUserId);
 
@@ -54,10 +56,10 @@ public class LeadsController : ControllerBase
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetLeadsQuery(
-            _tenantId, status, assignedToUserId, source, page, pageSize);
-
-        var result = await _sender.Send(query, cancellationToken);
+        var result = await _sender.Send(
+            new GetLeadsQuery(_currentUser.TenantId, status,
+                assignedToUserId, source, page, pageSize),
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(result.Value)

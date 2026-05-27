@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Tasks.Commands.CompleteTask;
 using NexaCRM.Application.Features.Tasks.Commands.CreateTask;
 using NexaCRM.Application.Features.Tasks.Commands.DeleteTask;
@@ -9,17 +11,19 @@ using NexaCRM.Application.Features.Tasks.Queries.GetTasks;
 
 namespace NexaCRM.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TasksController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    private static readonly Guid _tenantId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-    private static readonly Guid _userId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7");
-
-    public TasksController(ISender sender)
-        => _sender = sender;
+    public TasksController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
     // POST api/tasks
     [HttpPost]
@@ -31,8 +35,8 @@ public class TasksController : ControllerBase
             request.Title,
             request.Priority,
             request.AssignedToUserId,
-            _tenantId,
-            _userId,
+            _currentUser.TenantId,
+            _currentUser.UserId,
             request.DueDate,
             request.LeadId,
             request.DealId), cancellationToken);
@@ -54,7 +58,7 @@ public class TasksController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetTasksQuery(
-            _tenantId, assignedToUserId, isCompleted, priority, dueBefore, page, pageSize),
+            _currentUser.TenantId, assignedToUserId, isCompleted, priority, dueBefore, page, pageSize),
             cancellationToken);
 
         return result.IsSuccess
@@ -67,7 +71,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> GetOverdue(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new GetOverdueTasksQuery(_tenantId), cancellationToken);
+            new GetOverdueTasksQuery(_currentUser.TenantId), cancellationToken);
 
         return result.IsSuccess
             ? Ok(result.Value)

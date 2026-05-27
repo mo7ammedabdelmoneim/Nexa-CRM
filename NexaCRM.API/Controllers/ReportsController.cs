@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Reports.Queries.GetActivitySummary;
 using NexaCRM.Application.Features.Reports.Queries.GetConversionRate;
 using NexaCRM.Application.Features.Reports.Queries.GetLeadSources;
@@ -8,17 +10,19 @@ using NexaCRM.Application.Features.Reports.Queries.GetSalesRepPerformance;
 
 namespace NexaCRM.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ReportsController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    private static readonly Guid _tenantId =
-        Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6");
-
-    public ReportsController(ISender sender)
-        => _sender = sender;
+    public ReportsController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
     // GET api/reports/conversion-rate
     [HttpGet("conversion-rate")]
@@ -32,7 +36,7 @@ public class ReportsController : ControllerBase
         var toDate = to ?? DateTime.UtcNow;
 
         var result = await _sender.Send(
-            new GetConversionRateQuery(_tenantId, fromDate, toDate, assignedToUserId),
+            new GetConversionRateQuery(_currentUser.TenantId, fromDate, toDate, assignedToUserId),
             cancellationToken);
 
         return result.IsSuccess
@@ -47,7 +51,7 @@ public class ReportsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(
-            new GetPipelineValueQuery(_tenantId, assignedToUserId),
+            new GetPipelineValueQuery(_currentUser.TenantId, assignedToUserId),
             cancellationToken);
 
         return result.IsSuccess
@@ -61,7 +65,7 @@ public class ReportsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(
-            new GetSalesRepPerformanceQuery(_tenantId),
+            new GetSalesRepPerformanceQuery(_currentUser.TenantId),
             cancellationToken);
 
         return result.IsSuccess
@@ -80,7 +84,7 @@ public class ReportsController : ControllerBase
         var toDate = to ?? DateTime.UtcNow;
 
         var result = await _sender.Send(
-            new GetLeadSourcesQuery(_tenantId, fromDate, toDate),
+            new GetLeadSourcesQuery(_currentUser.TenantId, fromDate, toDate),
             cancellationToken);
 
         return result.IsSuccess
@@ -99,7 +103,7 @@ public class ReportsController : ControllerBase
         var toDate = to ?? DateTime.UtcNow;
 
         var result = await _sender.Send(
-            new GetActivitySummaryQuery(_tenantId, fromDate, toDate),
+            new GetActivitySummaryQuery(_currentUser.TenantId, fromDate, toDate),
             cancellationToken);
 
         return result.IsSuccess

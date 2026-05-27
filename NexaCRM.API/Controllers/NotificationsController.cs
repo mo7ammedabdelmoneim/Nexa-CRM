@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NexaCRM.Application.Contracts;
 using NexaCRM.Application.Features.Notifications.Commands.MarkAllAsRead;
 using NexaCRM.Application.Features.Notifications.Commands.MarkAsRead;
 using NexaCRM.Application.Features.Notifications.Queries.GetNotifications;
@@ -7,17 +9,19 @@ using NexaCRM.Application.Features.Notifications.Queries.GetUnreadCount;
 
 namespace NexaCRM.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class NotificationsController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICurrentUserService _currentUser;
 
-    private static readonly Guid _userId =
-        Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7");
-
-    public NotificationsController(ISender sender)
-        => _sender = sender;
+    public NotificationsController(ISender sender, ICurrentUserService currentUser)
+    {
+        _sender = sender;
+        _currentUser = currentUser;
+    }
 
     // GET api/notifications
     [HttpGet]
@@ -28,7 +32,7 @@ public class NotificationsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(
-            new GetNotificationsQuery(_userId, isRead, page, pageSize),
+            new GetNotificationsQuery(_currentUser.UserId, isRead, page, pageSize),
             cancellationToken);
 
         return result.IsSuccess
@@ -42,7 +46,7 @@ public class NotificationsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new GetUnreadCountQuery(_userId), cancellationToken);
+            new GetUnreadCountQuery(_currentUser.UserId), cancellationToken);
 
         return result.IsSuccess
             ? Ok(new { count = result.Value })
@@ -56,7 +60,7 @@ public class NotificationsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new MarkAsReadCommand(id, _userId), cancellationToken);
+            new MarkAsReadCommand(id, _currentUser.UserId), cancellationToken);
 
         return result.IsSuccess
             ? NoContent()
@@ -69,7 +73,7 @@ public class NotificationsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new MarkAllAsReadCommand(_userId), cancellationToken);
+            new MarkAllAsReadCommand(_currentUser.UserId), cancellationToken);
 
         return result.IsSuccess
             ? NoContent()
