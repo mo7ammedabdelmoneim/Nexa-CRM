@@ -1,0 +1,26 @@
+﻿using FluentValidation;
+
+namespace NexaCRM.Application.Features.Contacts.Commands.CreateContact;
+
+public class CreateContactCommandValidator
+    : AbstractValidator<CreateContactCommand>
+{
+    public CreateContactCommandValidator()
+    {
+        RuleFor(x => x.FirstName)
+            .NotEmpty().WithMessage("First name is required.")
+            .MaximumLength(50).WithMessage("First name cannot exceed 50 characters.");
+
+        RuleFor(x => x.LastName)
+            .NotEmpty().WithMessage("Last name is required.")
+            .MaximumLength(50).WithMessage("Last name cannot exceed 50 characters.");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Email is not valid.");
+
+        RuleFor(x => x.LinkedIn)
+            .Must(l => l is null || l.Contains("linkedin.com"))
+            .WithMessage("LinkedIn must be a valid LinkedIn URL.");
+    }
+}
