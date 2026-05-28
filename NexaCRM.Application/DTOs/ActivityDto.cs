@@ -9,3 +9,16 @@ public record ActivityDto(
     Guid? DealId,
     Guid CreatedByUserId,
     DateTime CreatedAt);
+
+
+
+public record AuditLogDto(
+    Guid Id,
+    string EntityType,
+    Guid EntityId,
+    string Action,
+    string? OldValues,
+    string? NewValues,
+    Guid UserId,
+    string? IpAddress,
+    DateTime Timestamp);

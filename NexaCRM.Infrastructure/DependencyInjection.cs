@@ -42,7 +42,9 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IContactRepository, ContactRepository>();
-        services.AddScoped<IContactQueryRepository, ContactQueryRepository>();
+        services.AddScoped<IContactQueryRepository, ContactQueryRepository>(); 
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IAuditLogQueryRepository, AuditLogQueryRepository>();
 
         // UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -53,8 +55,9 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
 
-        // Notification Service
+        // Services
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IAuditService, AuditService>();
 
         // SignalR
         services.AddSignalR();

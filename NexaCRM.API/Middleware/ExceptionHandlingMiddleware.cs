@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Serilog;
 using System.Net;
 using System.Text.Json;
 using NexaCRM.Domain.Exceptions;
@@ -8,15 +9,9 @@ namespace NexaCRM.API.Middleware;
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-    public ExceptionHandlingMiddleware(
-        RequestDelegate next,
-        ILogger<ExceptionHandlingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    public ExceptionHandlingMiddleware(RequestDelegate next)
+        => _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -40,6 +35,9 @@ public class ExceptionHandlingMiddleware
                 traceId = context.TraceIdentifier
             };
 
+            Log.Warning("Validation failed for {Path}: {@Errors}",
+                context.Request.Path, errors);
+
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
         catch (DomainException ex)
@@ -54,21 +52,24 @@ public class ExceptionHandlingMiddleware
                 traceId = context.TraceIdentifier
             };
 
+            Log.Warning("Domain exception at {Path}: {Message}",
+                context.Request.Path, ex.Message);
+
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception occurred");
-
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
-                
+
             var response = new
             {
                 status = 500,
                 error = "An unexpected error occurred.",
                 traceId = context.TraceIdentifier
             };
+
+            Log.Error(ex, "Unhandled exception at {Path}", context.Request.Path);
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }

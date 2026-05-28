@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NexaCRM.Domain.Aggregates.Activities;
+using NexaCRM.Domain.Aggregates.Audit;
 using NexaCRM.Domain.Aggregates.Contacts;
 using NexaCRM.Domain.Aggregates.Deals;
 using NexaCRM.Domain.Aggregates.Leads;
@@ -22,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Contact> Contacts => Set<Contact>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -21,13 +21,15 @@ public class LoggingBehavior<TRequest, TResponse>
         var requestName = typeof(TRequest).Name;
         var sw = Stopwatch.StartNew();
 
-        _logger.LogInformation("Handling {RequestName}", requestName);
+        _logger.LogInformation(
+            "Handling {RequestName} {@Request}", requestName, request);
 
         var response = await next();
 
         sw.Stop();
         _logger.LogInformation(
-            "Handled {RequestName} in {ElapsedMs}ms", requestName, sw.ElapsedMilliseconds);
+            "Handled {RequestName} in {ElapsedMs}ms",
+            requestName, sw.ElapsedMilliseconds);
 
         return response;
     }
